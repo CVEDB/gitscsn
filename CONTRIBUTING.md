@@ -1,0 +1,1 @@
+See [Issues](https://cvedb.github.io/gitscan/latest/community/contribute/issue/) and [Pull Requests](https://cvedb.github.io/gitscan/latest/community/contribute/pr/)

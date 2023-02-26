@@ -1,0 +1,10 @@
+FROM alpine:3.17.1
+RUN apk --no-cache add ca-certificates git
+
+# binaries were created with GoReleaser
+# need to copy binaries from folder with correct architecture
+# example architecture folder: dist/gitscan_canary_build_linux_arm64/gitscan
+ARG TARGETARCH
+COPY "dist/gitscan_canary_build_linux_${TARGETARCH}/gitscan" /usr/local/bin/gitscan
+COPY contrib/*.tpl contrib/
+ENTRYPOINT ["gitscan"]

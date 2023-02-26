@@ -1,0 +1,2 @@
+You should be able to access GitScan server installation within
+the cluster at http://{{ include "gitscan.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.port }}

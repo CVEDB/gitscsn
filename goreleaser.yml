@@ -1,0 +1,276 @@
+project_name: gitscan
+builds:
+  -
+    main: cmd/gitscan/main.go
+    binary: gitscan
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - freebsd
+      - windows
+    goarch:
+      - amd64
+      - 386
+      - arm
+      - arm64
+      - s390x
+      - ppc64le
+    goarm:
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: 386
+      # modernc.org/sqlite doesn't support the following pairs
+      - goos: freebsd
+        goarch: arm
+      - goos: freebsd
+        goarch: arm64
+      - goos: windows
+        goarch: 386
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+      - goos: windows
+        goarch: s390x
+      - goos: windows
+        goarch: ppc64le
+
+release:
+    extra_files:
+      - glob: ./bom.json
+    discussion_category_name: Announcements
+
+nfpms:
+  -
+    formats:
+      - deb
+      - rpm
+    vendor: "aquasecurity"
+    homepage: "https://github.com/aquasecurity"
+    maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
+    description: "A Fast Vulnerability Scanner for Containers"
+    license: "Apache-2.0"
+    file_name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: ARM
+      arm64: ARM64
+      ppc64le: PPC64LE
+      darwin: macOS
+      linux: Linux
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
+      windows: Windows
+    contents:
+     - src: contrib/*.tpl
+       dst: /usr/local/share/gitscan/templates
+
+archives:
+  -
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      386: 32bit
+      arm: ARM
+      arm64: ARM64
+      ppc64le: PPC64LE
+      darwin: macOS
+      linux: Linux
+      openbsd: OpenBSD
+      netbsd: NetBSD
+      freebsd: FreeBSD
+      dragonfly: DragonFlyBSD
+    files:
+      - README.md
+      - LICENSE
+      - contrib/*.tpl
+    format_overrides:
+      - goos: windows
+        format: zip
+
+
+brews:
+  -
+    tap:
+      owner: aquasecurity
+      name: homebrew-gitscan
+    homepage: "https://github.com/aquasecurity/gitscan"
+    description: "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues"
+    test: |
+      system "#{bin}/gitscan", "--version"
+
+dockers:
+  - image_templates:
+      - "docker.io/aquasec/gitscan:{{ .Version }}-amd64"
+      - "docker.io/aquasec/gitscan:latest-amd64"
+      - "ghcr.io/aquasecurity/gitscan:{{ .Version }}-amd64"
+      - "ghcr.io/aquasecurity/gitscan:latest-amd64"
+      - "public.ecr.aws/aquasecurity/gitscan:latest-amd64"
+      - "public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-amd64"
+    use: buildx
+    goos: linux
+    goarch: amd64
+    ids:
+      - gitscan
+    build_flag_templates:
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.opencontainers.image.vendor=Aqua Security"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/gitscan"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/gitscan/"
+      - "--label=org.opencontainers.image.documentation=https://cvedb.github.io/gitscan/v{{ .Version }}/"
+      - "--platform=linux/amd64"
+    extra_files:
+    - contrib/
+  - image_templates:
+      - "docker.io/aquasec/gitscan:{{ .Version }}-arm64"
+      - "docker.io/aquasec/gitscan:latest-arm64"
+      - "ghcr.io/aquasecurity/gitscan:{{ .Version }}-arm64"
+      - "ghcr.io/aquasecurity/gitscan:latest-arm64"
+      - "public.ecr.aws/aquasecurity/gitscan:latest-arm64"
+      - "public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-arm64"
+    use: buildx
+    goos: linux
+    goarch: arm64
+    ids:
+      - gitscan
+    build_flag_templates:
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.opencontainers.image.vendor=Aqua Security"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/gitscan"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/gitscan/"
+      - "--label=org.opencontainers.image.documentation=https://cvedb.github.io/gitscan/v{{ .Version }}/"
+      - "--platform=linux/arm64"
+    extra_files:
+    - contrib/
+  - image_templates:
+      - "docker.io/aquasec/gitscan:{{ .Version }}-s390x"
+      - "docker.io/aquasec/gitscan:latest-s390x"
+      - "ghcr.io/aquasecurity/gitscan:{{ .Version }}-s390x"
+      - "ghcr.io/aquasecurity/gitscan:latest-s390x"
+      - "public.ecr.aws/aquasecurity/gitscan:latest-s390x"
+      - "public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-s390x"
+    use: buildx
+    goos: linux
+    goarch: s390x
+    ids:
+      - gitscan
+    build_flag_templates:
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.opencontainers.image.vendor=Aqua Security"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/gitscan"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/gitscan/"
+      - "--label=org.opencontainers.image.documentation=https://cvedb.github.io/gitscan/v{{ .Version }}/"
+      - "--platform=linux/s390x"
+    extra_files:
+    - contrib/
+  - image_templates:
+      - "docker.io/aquasec/gitscan:{{ .Version }}-ppc64le"
+      - "docker.io/aquasec/gitscan:latest-ppc64le"
+      - "ghcr.io/aquasecurity/gitscan:{{ .Version }}-ppc64le"
+      - "ghcr.io/aquasecurity/gitscan:latest-ppc64le"
+      - "public.ecr.aws/aquasecurity/gitscan:latest-ppc64le"
+      - "public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-ppc64le"
+    use: buildx
+    goos: linux
+    goarch: ppc64le
+    ids:
+      - gitscan
+    build_flag_templates:
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.opencontainers.image.vendor=Aqua Security"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/gitscan"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/gitscan/"
+      - "--label=org.opencontainers.image.documentation=https://cvedb.github.io/gitscan/v{{ .Version }}/"
+      - "--platform=linux/ppc64le"
+    extra_files:
+    - contrib/
+
+docker_manifests:
+  - name_template: 'aquasec/gitscan:{{ .Version }}'
+    image_templates:
+    - 'aquasec/gitscan:{{ .Version }}-amd64'
+    - 'aquasec/gitscan:{{ .Version }}-arm64'
+    - 'aquasec/gitscan:{{ .Version }}-s390x'
+    - 'aquasec/gitscan:{{ .Version }}-ppc64le'
+  - name_template: 'ghcr.io/aquasecurity/gitscan:{{ .Version }}'
+    image_templates:
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-amd64'
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-arm64'
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-s390x'
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-ppc64le'
+  - name_template: 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}'
+    image_templates:
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-amd64'
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-arm64'
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-s390x'
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-ppc64le'
+  - name_template: 'aquasec/gitscan:latest'
+    image_templates:
+    - 'aquasec/gitscan:{{ .Version }}-amd64'
+    - 'aquasec/gitscan:{{ .Version }}-arm64'
+    - 'aquasec/gitscan:{{ .Version }}-s390x'
+    - 'aquasec/gitscan:{{ .Version }}-ppc64le'
+  - name_template: 'ghcr.io/aquasecurity/gitscan:latest'
+    image_templates:
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-amd64'
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-arm64'
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-s390x'
+    - 'ghcr.io/aquasecurity/gitscan:{{ .Version }}-ppc64le'
+  - name_template: 'public.ecr.aws/aquasecurity/gitscan:latest'
+    image_templates:
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-amd64'
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-arm64'
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-s390x'
+    - 'public.ecr.aws/aquasecurity/gitscan:{{ .Version }}-ppc64le'
+
+signs:
+- cmd: cosign
+  env:
+  - COSIGN_EXPERIMENTAL=1
+  signature: "${artifact}.sig"
+  certificate: "${artifact}.pem"
+  args:
+    - "sign-blob"
+    - "--oidc-issuer=https://token.actions.githubusercontent.com"
+    - "--output-certificate=${certificate}"
+    - "--output-signature=${signature}"
+    - "${artifact}"
+  artifacts: all
+  output: true
+
+docker_signs:
+- cmd: cosign
+  env:
+  - COSIGN_EXPERIMENTAL=1
+  artifacts: manifests
+  output: true
+  args:
+  - 'sign'
+  - '${artifact}'

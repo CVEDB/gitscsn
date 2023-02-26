@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "gitscan.fullname" . }}
+  labels:
+{{ include "gitscan.labels" . | indent 4 }}
+data:
+  TRIVY_LISTEN: "0.0.0.0:{{ .Values.service.port }}"
+  TRIVY_CACHE_DIR: "/home/scanner/.cache/gitscan"
+{{- if .Values.gitscan.cache.redis.enabled }}
+  TRIVY_CACHE_BACKEND: {{ .Values.gitscan.cache.redis.url | quote }}
+  TRIVY_CACHE_TTL: {{ .Values.gitscan.cache.redis.ttl | quote }}
+{{- end }}
+  TRIVY_DEBUG: {{ .Values.gitscan.debugMode | quote }}
+  TRIVY_SKIP_UPDATE: {{ .Values.gitscan.skipUpdate | quote }}
+  TRIVY_DB_REPOSITORY: {{ .Values.gitscan.dbRepository | quote }}
+{{- if .Values.httpProxy }}
+  HTTP_PROXY: {{ .Values.httpProxy | quote }}
+{{- end }}
+{{- if .Values.httpsProxy }}
+  HTTPS_PROXY: {{ .Values.httpsProxy | quote }}
+{{- end }}
+{{- if .Values.noProxy }}
+  NO_PROXY: {{ .Values.noProxy | quote }}
+{{- end }}
+{{- with .Values.gitscan.extraEnvVars }}
+  {{- . | toYaml | nindent 2 }}
+{{- end }}
