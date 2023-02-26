@@ -1,0 +1,51 @@
+GitScan has several sub commands, image, fs, repo, client and server.
+
+``` bash
+Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets
+
+Usage:
+  gitscan [global flags] command [flags] target
+  gitscan [command]
+
+Examples:
+  # Scan a container image
+  $ gitscan image python:3.4-alpine
+
+  # Scan a container image from a tar archive
+  $ gitscan image --input ruby-3.1.tar
+
+  # Scan local filesystem
+  $ gitscan fs .
+
+  # Run in server mode
+  $ gitscan server
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  config      Scan config files for misconfigurations
+  filesystem  Scan local filesystem
+  help        Help about any command
+  image       Scan a container image
+  kubernetes  scan kubernetes cluster
+  module      Manage modules
+  plugin      Manage plugins
+  repository  Scan a remote repository
+  rootfs      Scan rootfs
+  sbom        Scan SBOM for vulnerabilities
+  server      Server mode
+  version     Print the version
+
+Flags:
+      --cache-dir string          cache directory (default "/Users/teppei/Library/Caches/gitscan")
+  -c, --config string             config path (default "gitscan.yaml")
+  -d, --debug                     debug mode
+  -f, --format string             version format (json)
+      --generate-default-config   write the default config to gitscan-default.yaml
+  -h, --help                      help for gitscan
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout (default 5m0s)
+  -v, --version                   show version
+
+Use "gitscan [command] --help" for more information about a command.
+```
